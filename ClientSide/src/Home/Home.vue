@@ -1,6 +1,9 @@
 <template>
   <div>
     Homepage
+
+
+    <router-link :to="{ path: '/register'}">Register</router-link>
   </div>
 </template>
 
