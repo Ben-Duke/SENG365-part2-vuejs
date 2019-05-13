@@ -1,6 +1,9 @@
 <template>
 
     <div>
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+
       <div id="Test"></div>
         <div v-if="errorFlag" style="color:red;">
             {{error}}
@@ -86,7 +89,7 @@
                 console.log(response.data);
                 localStorage.token = response.data["token"];
                 console.log("Token is :"+localStorage.token);
-                this.$router.push("Home");
+                this.$router.push("Dashboard");
               }, function(error){
                 console.log("Login failed");
                 this.error = error;
@@ -105,34 +108,36 @@
           },
           post: function(){
             console.log("Posting");
+            let passwordErrorLabel = document.getElementById("confirmPasswordErrorLabel");
             let password = document.getElementById("password").value;
             let confirmPassword = document.getElementById("confirmPassword").value;
             console.log("Password compare " + password + " vs " + confirmPassword);
-            if(this.validate()){
-              console.log("passwords need to match");
-            }
-            else{
-              this.$http.post('http://localhost:4941/api/v1/users',
-                JSON.stringify({ params: {},
-                  username: this.username,
-                  givenName: this.givenName,
-                  familyName: this.familyName,
-                  email: this.email,
-                  password: this.password }))
-                .then(function(response){
-                  console.log(response.data);
-                  console.log("Yeet");
-                  this.login();
-                }, function(error){
+            if(password != confirmPassword){
+              passwordErrorLabel.hidden=false;
+              passwordErrorLabel.innerText = "Password and confirm password needs to match";
+            }else{
+              if(!this.validate()){
+                this.$http.post('http://localhost:4941/api/v1/users',
+                  JSON.stringify({ params: {},
+                    username: this.username,
+                    givenName: this.givenName,
+                    familyName: this.familyName,
+                    email: this.email,
+                    password: this.password }))
+                  .then(function(response){
+                    console.log(response.data);
+                    console.log("Yeet");
+                    this.login();
+                  }, function(error){
 
-                  this.error = error;
-                  console.log(this.error["statusText"]);
-                  this.errorFlag = true;
-                  //this.reqBody = JSON.parse(error);
+                    this.error = error;
+                    console.log(this.error["statusText"]);
+                    this.errorFlag = true;
+                    this.validate(error["statusText"]);
 
-                  this.validate(error["statusText"]);
+                  });
+              }
 
-                });
             }
 
 
@@ -150,14 +155,20 @@
             let passwordErrorText = document.getElementById("passwordErrorLabel");
             let emailErrorText = document.getElementById("emailErrorLabel");
             console.log("error is :" + error);
-            //data.email must be a valid email address
-            //let nameErrorText = document.getElementById("nameErrorLabel");
+
 
 
             if(this.username.length < 1){
               usernameErrorText.hidden = false;
               usernameErrorText.innerText = "username needs to be at least one character";
               valid = true;
+            }else{
+              if(errorToCheck === "username or email already in use"){
+                usernameErrorText.hidden = false;
+                usernameErrorText.innerText = "A user looks to be already registered with this username try another or try another email";
+                emailErrorText.hidden = false;
+                emailErrorText.innerText = "A user looks to be already registered with this email try another or try another username";
+              }
             }
 
             if(this.givenName.length < 1){
@@ -177,6 +188,14 @@
               valid = false;
             }
             console.log("Error to check:" + errorToCheck);
+            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+            if(!re.test(String(this.email).toLowerCase())){
+              console.log("Error for email");
+              emailErrorText.hidden=false;
+              emailErrorText.innerText = "Needs to be a valid email";
+              valid = false;
+            }
 
             if(errorToCheck === "data.email should match format \"email\""){
               emailErrorText.hidden=false;
