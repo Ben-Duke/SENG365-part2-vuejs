@@ -3,6 +3,8 @@ import App from './App.vue';
 import Home from './Home/Home.vue';
 import Register from './Register/Register.vue';
 import Dashboard from './Dashboard/DashBoard.vue';
+import Venues from './Venues/venues.vue';
+import Venue from './Venues/venue.vue';
 import VueRouter from 'vue-router';
 import VueResource from 'vue-resource';
 import BootstrapVue from 'bootstrap-vue';
@@ -26,8 +28,15 @@ const routes = [{
       {
         path:"/dashboard",
         component: Dashboard
+      },
+      {
+        path:"/venues",
+        component: Venues
+      },
+      {
+        path:"/venues/id:?",
+        component: Venue
       }
-
 ];
 
 const router = new VueRouter ({

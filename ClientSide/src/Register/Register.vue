@@ -97,7 +97,6 @@
           localStorage.token = newtoken;
         }
       },
-
       methods: {
           login: function(){
             this.$http.post('http://localhost:4941/api/v1/users/login',
