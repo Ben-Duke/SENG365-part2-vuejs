@@ -1,5 +1,6 @@
 <template>
   <div>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <b-navbar toggleable="lg" type="dark" variant="info">
     <b-navbar-brand href="/">Venue Hunter</b-navbar-brand>
 
@@ -27,19 +28,24 @@
     <div class="container"><button>Filter 1</button> <button>Filter 2</button> </div>
     <div id="container"class="container"></div>
   <div id="responseDiv"></div>
+    <table class="table" id="venueTable">
+      <thead>
+      <tr>
+        <th scope="col"></th>
+        <th scope="col">Venue name</th>
+        <th scope="col">Category</th>
+        <th scope="col">City</th>
+        <th scope="col">Description</th>
+        <th scope="col">Latitude</th>
+        <th scope="col">Longitude</th>
+        <th scope="col">Star Rating</th>
+        <th scope="col">Cost Rating</th>
+      </tr>
+      </thead>
+      <tbody>
 
-<!--    <div class  = "row">-->
-<!--      <div id="picture" ></div>-->
-<!--      <div id="rowinfo">-->
-<!--        Name:-->
-<!--        <br>-->
-<!--        Venue category-->
-<!--        <br>-->
-<!--        Stars-->
-<!--        <br>-->
-<!--        Cost:-->
-<!--      </div>-->
-<!--    </div>-->
+      </tbody>
+    </table>
 
   </div>
 </template>
@@ -62,9 +68,8 @@
             .then(function (response) {
              // console.log("data = " + response.data);
               console.log("data size = " + response.data.length);
-              let i;
-              let container = document.getElementById("container");
-              for(i = 0; i < response.data.length; i++){
+
+              for(let i = 0; i < response.data.length; i++){
                 //Data of the request but for the index of i
                 let data = response.data[i];
                 let stars;
@@ -73,21 +78,73 @@
                 }else{
                   stars = data["meanStarRating"];
                 };
+                let cost;
+                if(data["modeCostRating"] == null){
+                  cost = "-";
+                }else{
+                  cost = data["modeCostRating"];
+                };
 
+                let table = document.getElementById("venueTable");
                 //create a div
-                let venueInfoRow = document.createElement("div");
-                venueInfoRow.className += "list-group-item";
-                venueInfoRow.innerHTML += "Name: " +  data["venueName"];
-                venueInfoRow.innerHTML += "<br>";
-                venueInfoRow.innerHTML += "Venue category: " + data["categoryId"];
-                venueInfoRow.innerHTML += "<br>";
-                venueInfoRow.innerHTML += "Stars: " + stars;
-                container.appendChild(venueInfoRow);
-                //container.appendChild(document.createElement('br'))
+                let venueInfoRow = document.createElement("tr");
+                let venuepicture = document.createElement("span");
+              //<td>Mark</td>
 
+                // venueId":4,"venueName":"Santa's Winter Palace","categoryId":1,"city":"North Pole",' +
+                // '"shortDescription":"The chillest place on earth.",' +
+                // '"latitude":-45,"longitude":0,"meanStarRating":null,"modeCostRating":null,"primaryPhoto":null
+                let venuePicture = document.createElement("td");
+                let picture = document.createElement('img');
+                picture.setAttribute('src', 'http://www.bruttles.com/layout/images/NoPhotoDefault.png?1323807363');
+                picture.setAttribute('alt', 'No Picture');
+                picture.setAttribute('height', '100');
+                picture.setAttribute('width', '100');
+                venuePicture.appendChild(picture);
+                venueInfoRow.appendChild(venuePicture);
+              // <img src="smiley.gif" alt="Smiley face" height="42" width="42">
+              //   venuePicture.innerText = "No Picture";
+              //   venueInfoRow.appendChild(venuePicture);
+
+
+                //http://www.bruttles.com/layout/images/NoPhotoDefault.png?1323807363
+
+                let venueName = document.createElement("td");
+                venueName.innerText = data["venueName"];
+                venueInfoRow.appendChild(venueName);
+
+                let venueCategory = document.createElement("td");
+                venueCategory.innerText = data["categoryId"];
+                venueInfoRow.appendChild(venueCategory);
+
+                let venueCity = document.createElement("td");
+                venueCity.innerText = data["city"];
+                venueInfoRow.appendChild(venueCity);
+
+                let venueDescription = document.createElement("td");
+                venueDescription.innerText = data["shortDescription"];
+                venueInfoRow.appendChild(venueDescription);
+
+                let venueLatitude = document.createElement("td");
+                venueLatitude.innerText = data["latitude"];
+                venueInfoRow.appendChild(venueLatitude);
+
+                let venueLongitude = document.createElement("td");
+                venueLongitude.innerText = data["longitude"];
+                venueInfoRow.appendChild(venueLongitude);
+
+                let venueStarRating = document.createElement("td");
+                venueStarRating.innerText = stars;
+                venueInfoRow.appendChild(venueStarRating);
+
+                let venueCostRating = document.createElement("td");
+                venueCostRating.innerText = cost;
+                venueInfoRow.appendChild(venueCostRating);
+
+                table.appendChild(venueInfoRow);
                 console.log("Object is " + JSON.stringify(response.data[i]));
               }
-             // document.getElementById("responseDiv").innerText = JSON.stringify(response.data[1]);
+
 
             }, function (error) {
               console.log("fetching failed");
@@ -123,5 +180,8 @@
     padding-right: 30px;
     padding-bottom: 50px;
     padding-left: 80px;
+  }
+  .checked {
+    color: orange;
   }
 </style>
