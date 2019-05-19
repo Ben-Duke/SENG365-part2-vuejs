@@ -25,7 +25,7 @@
     </b-collapse>
   </b-navbar>
 
-    <div class="container"><button>Filter 1</button> <button>Filter 2</button> </div>
+    <div class="container"><input v-model="userEntry" placeholder="Search on"><button v-on:click="this.getVenues">Search</button> </div>
     <div id="container"class="container"></div>
   <div id="responseDiv"></div>
     <table class="table" id="venueTable">
@@ -34,7 +34,7 @@
         <th scope="col"></th>
         <th scope="col">Venue name</th>
         <th scope="col">Category</th>
-        <th scope="col">City</th>
+        <th scope="col">City <input type="text" id="citytext" v-model="city"></th>
         <th scope="col">Description</th>
         <th scope="col">Latitude</th>
         <th scope="col">Longitude</th>
@@ -42,7 +42,7 @@
         <th scope="col">Cost Rating</th>
       </tr>
       </thead>
-      <tbody>
+      <tbody id="rowTarget">
 
       </tbody>
     </table>
@@ -53,43 +53,55 @@
 <script>
     export default {
       data() {
-        return {}
+        return {
+          userEntry: '',
+          categories: [],
+          userLatitude: 0,
+          userLongitude:0,
+          city:""
+        }
       },
-      mounted(){
+      mounted() {
+        this.categories = this.getCategories();
         this.getVenues();
       },
       methods: {
         getVenues: function () {
+
+
+
           this.$http.get('http://localhost:4941/api/v1/venues?',
             JSON.stringify({
-              params: {"city" : "North Pole"}//could be useful later for filtering
+              params: {city:this.city}//could be useful later for filtering
               ,
             }))
             .then(function (response) {
-             // console.log("data = " + response.data);
-              console.log("data size = " + response.data.length);
 
-              for(let i = 0; i < response.data.length; i++){
+
+              console.log();
+              for (let i = 0; i < response.data.length; i++) {
                 //Data of the request but for the index of i
                 let data = response.data[i];
                 let stars;
-                if(data["meanStarRating"] == null){
+                if (data["meanStarRating"] == null) {
                   stars = 0.0;
-                }else{
+                } else {
                   stars = data["meanStarRating"];
-                };
+                }
+
                 let cost;
-                if(data["modeCostRating"] == null){
+                if (data["modeCostRating"] == null) {
                   cost = "-";
-                }else{
+                } else {
                   cost = data["modeCostRating"];
-                };
+                }
+
 
                 let table = document.getElementById("venueTable");
                 //create a div
                 let venueInfoRow = document.createElement("tr");
                 let venuepicture = document.createElement("span");
-              //<td>Mark</td>
+                //<td>Mark</td>
 
                 // venueId":4,"venueName":"Santa's Winter Palace","categoryId":1,"city":"North Pole",' +
                 // '"shortDescription":"The chillest place on earth.",' +
@@ -102,9 +114,9 @@
                 picture.setAttribute('width', '100');
                 venuePicture.appendChild(picture);
                 venueInfoRow.appendChild(venuePicture);
-              // <img src="smiley.gif" alt="Smiley face" height="42" width="42">
-              //   venuePicture.innerText = "No Picture";
-              //   venueInfoRow.appendChild(venuePicture);
+                // <img src="smiley.gif" alt="Smiley face" height="42" width="42">
+                //   venuePicture.innerText = "No Picture";
+                //   venueInfoRow.appendChild(venuePicture);
 
 
                 //http://www.bruttles.com/layout/images/NoPhotoDefault.png?1323807363
@@ -114,7 +126,8 @@
                 venueInfoRow.appendChild(venueName);
 
                 let venueCategory = document.createElement("td");
-                venueCategory.innerText = data["categoryId"];
+                let catId = (data["categoryId"]);
+                venueCategory.innerText = this.categories[catId-1]['categoryName'] ;
                 venueInfoRow.appendChild(venueCategory);
 
                 let venueCity = document.createElement("td");
@@ -152,7 +165,26 @@
               this.errorFlag = true;
 
             });
-        }
+
+
+        },
+        getCategories: function () {
+          this.$http.get('http://localhost:4941/api/v1/categories',
+            JSON.stringify({ }))
+            .then(function (response) {
+              this.categories = response.data;
+              //console.log("category size  = " + this.categories);
+              // console.log("data = " + response.data);
+              //console.log("data = " + JSON.stringify(response.data));
+
+            }, function (error) {
+              console.log("fetching failed");
+              this.error = error;
+              this.errorFlag = true;
+
+            });
+        },
+
       }
     }
 </script>

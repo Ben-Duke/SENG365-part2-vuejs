@@ -24,8 +24,8 @@
   </b-navbar>
 
 
-    <button>Venues</button>
-    <button>Reviews</button>
+    <button onclick="window.location.href='/venues'">Venues</button>
+    <button onclick="window.location.href='/reviews'">Reviews</button>
   </div>
 
 
