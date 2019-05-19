@@ -33,28 +33,31 @@
   export default {
     data() {
       return {
-        id:4,
+        id:0,
         venues:[],
         cost:0,
         stars:0,
+        name:""
       }
     },
     mounted(){
+      console.log("Id is "+this.$route.params.id);
       this.getVenue();
       this.getVenues();
     },
     methods: {
+
       getVenue: function () {
         ///
         ///Change this after
         ///
-        this.$http.get('http://localhost:4941/api/v1/venues/4',
+        this.$http.get('http://localhost:4941/api/v1/venues/'+this.$route.params.id,
           JSON.stringify({
             params: {}//could be useful later for filtering
             ,
           }))
           .then(function (response) {
-            console.log("data size = " + JSON.stringify(  response['data']));
+            //console.log("data size = " + JSON.stringify(  response['data']));
             let data = response.data;
             let name = document.getElementById("name");
             name.innerText += " " + data['venueName']
@@ -90,14 +93,12 @@
           });
       },
       getVenues: function () {
-        this.$http.get('http://localhost:4941/api/v1/venues?',
-          JSON.stringify({
-            params: {"city" : "North Pole"}//could be useful later for filtering
-            ,
-          }))
+        this.$http.get('http://localhost:4941/api/v1/venues?'
+          ,{'q':this.name,'count':1},)
           .then(function (response) {
-            console.log("data = " + response.data);
+            console.log("data single= " + JSON.stringify(response.data));
             this.venues = response.data;
+
 
           }, function (error) {
             console.log("fetching failed");
