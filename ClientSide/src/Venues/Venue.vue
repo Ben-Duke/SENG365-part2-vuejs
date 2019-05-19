@@ -9,8 +9,8 @@
         <p id="name">Name: </p>
         <p id="city">City:</p>
         <p id="category">Category: </p>
-        <p id="stars">Stars: {{this.stars}}</p>
-        <p id="cost">Cost: {{this.cost}} </p>
+        <p id="stars">Stars: </p>
+        <p id="cost">Cost:  </p>
         <p id="admin">Admin: </p>
         <p id="address">Address: </p>
         <p id="shortDesc">Quick Description: </p>
@@ -43,23 +43,19 @@
     mounted(){
       console.log("Id is "+this.$route.params.id);
       this.getVenue();
-      this.getVenues();
+
     },
     methods: {
 
       getVenue: function () {
-        ///
-        ///Change this after
-        ///
-        this.$http.get('http://localhost:4941/api/v1/venues/'+this.$route.params.id,
-          JSON.stringify({
-            params: {}//could be useful later for filtering
-            ,
-          }))
+        this.$http.get('http://localhost:4941/api/v1/venues/'+this.$route.params.id
+          )
+
           .then(function (response) {
             //console.log("data size = " + JSON.stringify(  response['data']));
             let data = response.data;
             let name = document.getElementById("name");
+            this.name = data['venueName'];
             name.innerText += " " + data['venueName']
 
             let city = document.getElementById("city");
@@ -68,8 +64,6 @@
             let category = document.getElementById("category");
             category.innerText += " " + data['category']['categoryName'];
 
-            //let stars = document.getElementById("stars");
-            //stars.innerText += " " + data['stars']['categoryName'];
 
             let admin = document.getElementById("admin");
             admin.innerText += " " + data['admin']['username'];
@@ -84,21 +78,30 @@
             let longDesc = document.getElementById("longDesc");
             longDesc.innerText += " " + data['longDescription'];
 
-
+            this.getVenues();
           }, function (error) {
             console.log("fetching failed");
             this.error = error;
             this.errorFlag = true;
 
-          });
+          })
+
+
       },
       getVenues: function () {
-        this.$http.get('http://localhost:4941/api/v1/venues?'
-          ,{'q':this.name,'count':1},)
+        console.log("name is"+ this.name);
+        this.$http.get('http://localhost:4941/api/v1/venues?count=1&q='+this.name
+          )
           .then(function (response) {
-            console.log("data single= " + JSON.stringify(response.data));
-            this.venues = response.data;
+            let data=response.data[0];
+            console.log("data single= " + JSON.stringify(response.data[0]));
 
+
+            let stars = document.getElementById("stars");
+            stars.innerText += " " + data['meanStarRating'];
+
+            let cost = document.getElementById("cost");
+            cost.innerText += " " + data['modeCostRating'];
 
           }, function (error) {
             console.log("fetching failed");
