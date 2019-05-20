@@ -43,7 +43,7 @@
       </tr>
       </thead>
       <tbody id="rowTarget">
-
+      <div id="aimHere"></div>
       </tbody>
     </table>
 
@@ -63,22 +63,36 @@
       },
       mounted() {
         this.getCategories();
-        this.getVenues();
+        //this.getVenues();
       },
       methods: {
         getVenues: function () {
 
+          let urlParams = '';
 
+          if(this.city !== ""){
+            urlParams += "city=" + this.city;
+          }
+          else if(this.userEntry !==''){
+            urlParams += 'q='+this.userEntry;
+          }
 
-          this.$http.get('http://localhost:4941/api/v1/venues?',
-            JSON.stringify({
-              params: {city:this.city}//could be useful later for filtering
-              ,
-            }))
+          this.$http.get('http://localhost:4941/api/v1/venues?'+ urlParams)
             .then(function (response) {
 
+              ///Refreshing the table here
+              console.log(document.getElementById('rowTarget'));
+              //document.getElementById('rowTarget').innerHTML='';
 
-              console.log();
+
+              let table = document.getElementById("venueTable");
+//or use :  var table = document.all.tableid;
+              for(let i = table.rows.length - 1; i > 0; i--)
+              {
+                table.deleteRow(i);
+              }
+
+
               for (let i = 0; i < response.data.length; i++) {
                 //Data of the request but for the index of i
                 let data = response.data[i];
@@ -96,30 +110,29 @@
                   cost = data["modeCostRating"];
                 }
 
-
                 let table = document.getElementById("venueTable");
                 //create a div
                 let venueInfoRow = document.createElement("tr");
                 let venuepicture = document.createElement("span");
-                //<td>Mark</td>
 
-                // venueId":4,"venueName":"Santa's Winter Palace","categoryId":1,"city":"North Pole",' +
-                // '"shortDescription":"The chillest place on earth.",' +
-                // '"latitude":-45,"longitude":0,"meanStarRating":null,"modeCostRating":null,"primaryPhoto":null
                 let venuePicture = document.createElement("td");
                 let picture = document.createElement('img');
-                picture.setAttribute('src', 'http://www.bruttles.com/layout/images/NoPhotoDefault.png?1323807363');
+
+
+                if(data['primaryPhoto']){
+                  picture.setAttribute('src', 'http://localhost:4941/api/v1/venues/' + data['venueId'] + "/photos/"+ data['primaryPhoto'] );
+
+                }else{
+                  console.log("No image for " + data["venueName"] );
+                  picture.setAttribute('src', 'http://www.bruttles.com/layout/images/NoPhotoDefault.png?1323807363');
+                }
+
                 picture.setAttribute('alt', 'No Picture');
                 picture.setAttribute('height', '100');
                 picture.setAttribute('width', '100');
                 venuePicture.appendChild(picture);
                 venueInfoRow.appendChild(venuePicture);
-                // <img src="smiley.gif" alt="Smiley face" height="42" width="42">
-                //   venuePicture.innerText = "No Picture";
-                //   venueInfoRow.appendChild(venuePicture);
 
-
-                //http://www.bruttles.com/layout/images/NoPhotoDefault.png?1323807363
 
                 let venueName = document.createElement("td");
                 venueName.innerText = data["venueName"];
@@ -176,7 +189,7 @@
               //console.log("category size  = " + this.categories);
               // console.log("data = " + response.data);
               //console.log("data = " + JSON.stringify(response.data));
-
+              this.getVenues();
             }, function (error) {
               console.log("fetching failed");
               this.error = error;
