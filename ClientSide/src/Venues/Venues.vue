@@ -62,7 +62,7 @@
         }
       },
       mounted() {
-        this.categories = this.getCategories();
+        this.getCategories();
         this.getVenues();
       },
       methods: {
