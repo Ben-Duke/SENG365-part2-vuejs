@@ -25,6 +25,9 @@
     </b-collapse>
   </b-navbar>
 
+
+
+
     <div class="container"><input v-model="userEntry" placeholder="Search on"><button v-on:click="this.getVenues">Search</button> </div>
     <div id="container"class="container"></div>
   <div id="responseDiv"></div>
@@ -33,12 +36,15 @@
       <tr>
         <th scope="col"></th>
         <th scope="col">Venue name</th>
-        <th scope="col">Category</th>
+        <th scope="col">Category <select id="catDropDown" v-model="selected">
+          <option disabled value="">Please select one</option>
+
+        </select></th>
         <th scope="col">City <input type="text" id="citytext" v-model="city"></th>
         <th scope="col">Description</th>
         <th scope="col">Latitude</th>
         <th scope="col">Longitude</th>
-        <th scope="col">Star Rating</th>
+        <th scope="col">Star Rating </th>
         <th scope="col">Cost Rating</th>
       </tr>
       </thead>
@@ -58,7 +64,9 @@
           categories: [],
           userLatitude: 0,
           userLongitude:0,
-          city:""
+          city:"",
+          selected:"",
+          sortBy:"",
         }
       },
       mounted() {
@@ -67,9 +75,12 @@
       },
       methods: {
         getVenues: function () {
-
+          console.log("Selected is " + this.selected);
           let urlParams = '';
 
+          if(this.selected !== ''){
+            urlParams+= "categoryId="+this.selected;
+          }
           if(this.city !== ""){
             urlParams += "city=" + this.city;
           }
@@ -185,10 +196,25 @@
           this.$http.get('http://localhost:4941/api/v1/categories',
             JSON.stringify({ }))
             .then(function (response) {
+
+
+
               this.categories = response.data;
-              //console.log("category size  = " + this.categories);
-              // console.log("data = " + response.data);
-              //console.log("data = " + JSON.stringify(response.data));
+              console.log("cats are " +  JSON.stringify( this.categories));
+              let dropdown = document.getElementById('catDropDown');
+              for(let i in this.categories){
+
+
+                let opt = document.createElement('option');
+                opt.appendChild( document.createTextNode(this.categories[i]['categoryName']) );
+                opt.value = this.categories[i]['categoryId'];
+                dropdown.appendChild(opt);
+              }
+              let opt = document.createElement('option');
+              opt.appendChild( document.createTextNode('None') );
+              opt.value = '';
+              dropdown.appendChild(opt);
+
               this.getVenues();
             }, function (error) {
               console.log("fetching failed");
