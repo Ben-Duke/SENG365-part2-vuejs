@@ -16,8 +16,13 @@
           <b-navbar-nav class="ml-auto">
             <b-nav-item-dropdown right>
               <!-- Using 'button-content' slot -->
-              <template slot="button-content"><em>User</em></template>
+
+
+
+
+
               <b-dropdown-item href="#">Profile</b-dropdown-item>
+
               <b-dropdown-item href="#">Sign Out</b-dropdown-item>
 
             </b-nav-item-dropdown>
@@ -106,7 +111,9 @@
                 password: this.password }))
               .then(function(response){
                 console.log(response.data);
+                localStorage.id = response.data["userId"];
                 localStorage.token = response.data["token"];
+                localStorage.name = this.givenName;
                 console.log("Token is :"+localStorage.token);
                 this.$router.push("dashboard")
               }, function(error){

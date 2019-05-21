@@ -81,7 +81,8 @@
         return {
           userEntry: '',
           categories: [],
-
+          firstName:'',
+          token:'',
           city:"",
           selected:"",
           sortBy:"",
@@ -91,7 +92,6 @@
       },
       mounted() {
         this.getCategoriesDefault();
-        //this.getVenues();
       },
       methods: {
         getVenuesDefault: function () {
@@ -100,8 +100,8 @@
 
           console.log('url is '+ urlParams);
           //sortBy=DISTANCE&reverseSort=true&myLatitude=-43.5216384&myLongitude=172.57758719999998
-          //this.$http.get('http://localhost:4941/api/v1/venues?'+ 'sortBy=COST_RATING&reverseSort=true')
-          this.$http.get('http://localhost:4941/api/v1/venues?'+ 'sortBy=DISTANCE&reverseSort=true&myLatitude=-43.5216384&myLongitude=172.57758719999998')
+          this.$http.get('http://localhost:4941/api/v1/venues?'+ 'sortBy=COST_RATING&reverseSort=true')
+
             .then(function (response) {
 
 
@@ -186,8 +186,11 @@
                 venueCostRating.innerText = cost;
                 venueInfoRow.appendChild(venueCostRating);
 
+                venueInfoRow.onclick = function() {
+                  window.location.href = "/venues/"+ data['venueId'];
+                }
                 table.appendChild(venueInfoRow);
-                //console.log("Object is " + JSON.stringify(response.data[i]));
+
               }
 
 
@@ -201,7 +204,7 @@
 
         },
         getVenues: function () {
-          console.log("Venues");
+
           let urlParams = '';
 
           if(this.sortBy === 'Sort by distance'){
@@ -281,6 +284,7 @@
                 for (let i = 0; i < response.data.length; i++) {
                   //Data of the request but for the index of i
                   let data = response.data[i];
+                  console.log(JSON.stringify(data));
                   let stars;
                   if (data["meanStarRating"] == null) {
                     stars = 3;
@@ -352,6 +356,9 @@
                   venueCostRating.innerText = cost;
                   venueInfoRow.appendChild(venueCostRating);
 
+                  venueInfoRow.onclick = function() {
+                    window.location.href = "/venues/"+ data['venueId'];
+                  }
                   table.appendChild(venueInfoRow);
                   //console.log("Object is " + JSON.stringify(response.data[i]));
                 }
@@ -365,37 +372,6 @@
               });
 
           }, 100)
-        },
-        getCategories: function () {
-          this.$http.get('http://localhost:4941/api/v1/categories',
-            JSON.stringify({ }))
-            .then(function (response) {
-
-
-
-              this.categories = response.data;
-              console.log("cats are " +  JSON.stringify( this.categories));
-              let dropdown = document.getElementById('catDropDown');
-              for(let i in this.categories){
-
-
-                let opt = document.createElement('option');
-                opt.appendChild( document.createTextNode(this.categories[i]['categoryName']) );
-                opt.value = this.categories[i]['categoryId'];
-                dropdown.appendChild(opt);
-              }
-              let opt = document.createElement('option');
-              opt.appendChild( document.createTextNode('None') );
-              opt.value = '';
-              dropdown.appendChild(opt);
-
-              this.getVenues();
-            }, function (error) {
-              console.log("fetching failed");
-              this.error = error;
-              this.errorFlag = true;
-
-            });
         },
         getCategoriesDefault: function () {
 
@@ -430,7 +406,15 @@
 
             });
         },
+        logOut: function(){
 
+          localStorage.token = '';
+          localStorage.id = '';
+          localStorage.name = '';
+          this.name = '';
+          this.token = '';
+          window.location.reload();
+        }
       }
     }
 </script>

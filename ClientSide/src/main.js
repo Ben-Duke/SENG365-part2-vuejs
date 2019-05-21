@@ -34,7 +34,7 @@ const routes = [{
         component: Venues
       },
       {
-        path:"/venue/:id",
+        path:"/venues/:id",
         component: Venue
       }
 ];
