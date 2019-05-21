@@ -459,9 +459,6 @@
               password: this.password }))
             .then(function(response){
               console.log("Log in response " + JSON.stringify(response.data))
-
-
-
               localStorage.token = response.data["token"];
               localStorage.id = response.data['userId'];
               this.token = localStorage.token;

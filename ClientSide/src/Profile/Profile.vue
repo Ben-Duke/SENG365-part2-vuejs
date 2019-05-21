@@ -40,6 +40,9 @@
       </div>
 
     </div>
+    <div id="userDetails">
+
+    </div>
 
   </div>
 
@@ -67,10 +70,52 @@
       window.addEventListener("load", function(event) {
         document.getElementById('profile').href = this.url;
       });
-
+      this.getUserDetails();
     },
 
+
+
       methods:{
+        getUserDetails: function() {
+          console.log("token is " + localStorage.token);
+          let headersVariable = {
+            headers: {
+            'Content-Type': 'application/json;charset=utf-8',
+            'X-Authorization': localStorage.token
+            }
+          };
+
+          let content = JSON.stringify({
+            params: {},
+            });
+
+          this.$http.get('http://localhost:4941/api/v1/users/'+ this.$route.params.id, headersVariable)
+
+            .then(function(response) {
+              console.log(JSON.stringify(response.data));
+              let userDetailsDiv = document.getElementById('userDetails');
+              console.log(userDetailsDiv)
+              userDetailsDiv.append(document.createElement('label').innerText='Username: ')
+              userDetailsDiv.append(document.createElement('p').innerText=response.data['username'])
+              userDetailsDiv.append(document.createElement('br'));
+              userDetailsDiv.append(document.createElement('label').innerText='First name: ')
+              userDetailsDiv.append(document.createElement('p').innerText=response.data['givenName'])
+              userDetailsDiv.append(document.createElement('br'));
+              userDetailsDiv.append(document.createElement('label').innerText='Last name: ')
+              userDetailsDiv.append(document.createElement('p').innerText=response.data['familyName'])
+
+
+
+
+
+              if(response.data['email']){
+                userDetailsDiv.append(document.createElement('br'));
+                userDetailsDiv.append(document.createElement('label').innerText='Email: ')
+                userDetailsDiv.append(document.createElement('p').innerText=response.data['email'])
+              }
+            });
+                  },
+
         openLogIn: function (){
           console.log("Login");
           var modal = document.getElementById("myModal");
