@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue';
 import Home from './Home/Home.vue';
+import AddVenue from './AddVenue/AddVenue.vue'
 import Profile from './Profile/Profile.vue'
 import Register from './Register/Register.vue';
 import Dashboard from './Dashboard/DashBoard.vue';
@@ -26,7 +27,7 @@ const routes = [
       },
       {
         path:"/",
-        component: Dashboard
+        component: Venues
       },
       {
         path:"/venues",
@@ -35,6 +36,10 @@ const routes = [
       {
         path:"/venues/:id",
         component: Venue
+      },
+      {
+        path:"/addvenue",
+        component: AddVenue
       },
       {
          path:"/users/:id",
