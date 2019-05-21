@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue';
 import Home from './Home/Home.vue';
+import Profile from './Profile/Profile.vue'
 import Register from './Register/Register.vue';
 import Dashboard from './Dashboard/DashBoard.vue';
 import Venues from './Venues/Venues.vue';
@@ -17,16 +18,14 @@ Vue.use(VueResource);
 
 Vue.http.options.emulateJSON = true
 
-const routes = [{
-        path:"/",
-        component: Home
-      },
+const routes = [
+
       {
         path:"/register",
         component: Register
       },
       {
-        path:"/dashboard",
+        path:"/",
         component: Dashboard
       },
       {
@@ -36,7 +35,12 @@ const routes = [{
       {
         path:"/venues/:id",
         component: Venue
+      },
+      {
+         path:"/users/:id",
+        component: Profile
       }
+
 ];
 
 const router = new VueRouter ({
