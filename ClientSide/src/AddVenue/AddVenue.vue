@@ -43,47 +43,51 @@
       </div>
 
 
-      {
-      "venueName": "Dank grotto",
-      "categoryId": 1,
-      "city": "North Pole",
-      "shortDescription": "The Dankest place on earth.",
-      "longDescription": "Especially good in the summer months.",
-      "address": "1 North Pole",
-      "latitude": -45,
-      "longitude": 0
-      }
-
+      <div width="50%">
       <form>
 
-        <p class="h4 text-center mb-4">Register</p>
+
         <label>Venue Name:</label>
         <input v-model="venueName" placeholder="Name of the venue" required class="form-control">
         <label id="venueNameErrorLabel" style="color:red" hidden="true" ref="venueNameErrorLabel"></label>
         <br>
         <label>Category:</label><span style="padding: 5%"></span>
         <br>
-        <input v-model="categoryId" placeholder="Category name" required class="form-control">
+        <select id="catDropDown" v-model="selected">
+          <option disabled value="">Please select one</option>
 
+        </select>
+        <br>
         <label>City:</label>
         <input v-model="city" placeholder="City name" required class="form-control">
 
+
         <label id="cityErrorLabel" style="color:red" hidden="true" ref="nameErrorLabel"></label>
         <br>
-        <label>address:</label>
-        <input v-model="shortDescription" placeholder="Email" required class="form-control">
-        <label id="emailErrorLabel" style="color:red" hidden="true" ref="nameErrorLabel"></label>
+        <label>Address:</label>
+        <input v-model="shortDescription" placeholder="Type your address" required class="form-control">
+        <label id="addressErrorLabel" style="color:red" hidden="true" ref="nameErrorLabel"></label>
         <br>
         <label>Short Description:</label>
-        <input v-model="shortDescription" placeholder="Email" required class="form-control">
-        <label id="emailErrorLabel" style="color:red" hidden="true" ref="nameErrorLabel"></label>
+        <input v-model="shortDescription" placeholder="Type your description" required class="form-control">
+        <label id="shortDescriptionErrorLabel" style="color:red" hidden="true" ref="nameErrorLabel"></label>
         <br>
-        <label>Password:</label>
-        <input id="password" type="password" v-model="password" placeholder="password"  class="form-control" required>
+        <label>Long Description:</label>
+        <input id="password" type="textfield" v-model="longDescription" placeholder="Type your description"  class="form-control" required>
+        <label id="LongDescriptionErrorLabel" style="color:red" hidden="true" ref="nameErrorLabel"></label>
 
+        <br>
+        <label>Latitude:</label>
+        <input v-model="latitude" placeholder="Name of the venue" required class="form-control">
+        <label id="latitudeErrorLabel" style="color:red" hidden="true" ref="venueNameErrorLabel"></label>
+        <br>
+        <label>Longitude:</label>
+        <input v-model="longitude" placeholder="Enter latitude" required class="form-control">
+        <label id="longitudeErrorLabel" style="color:red" hidden="true" ref="venueNameErrorLabel"></label>
         <br>
         <button class="btn btn-primary" align="center" v-on:click.prevent="post">Submit</button>
       </form>
+      </div>
     </div>
 
 </template>
@@ -93,6 +97,8 @@
 
       data(){
         return{
+          categories:[],
+          selected:'',
           pageName: "AddVenue",
           url:'/users/',
           signedInId: '',
@@ -100,7 +106,8 @@
           email:'',
           password:'',
           token:'',
-
+          error: "",
+          errorFlag: false,
           venueName:'',
           categoryId:'',
           city:'',
@@ -113,9 +120,41 @@
       },
       mounted(){
         this.token = localStorage.token;
-        this
+        this.getCategories();
       },
       methods:{
+        getCategories: function () {
+
+
+          this.$http.get('http://localhost:4941/api/v1/categories',
+            JSON.stringify({ }))
+            .then(function (response) {
+
+
+
+              this.categories = response.data;
+              console.log("cats are " +  JSON.stringify( this.categories));
+              let dropdown = document.getElementById('catDropDown');
+              for(let i in this.categories){
+
+
+                let opt = document.createElement('option');
+                opt.appendChild( document.createTextNode(this.categories[i]['categoryName']) );
+                opt.value = this.categories[i]['categoryId'];
+                dropdown.appendChild(opt);
+              }
+
+
+
+
+
+            }, function (error) {
+              console.log("fetching failed");
+              this.error = error;
+              this.errorFlag = true;
+
+            });
+        },
         openLogIn: function (){
           console.log("Login");
           var modal = document.getElementById("myModal");
